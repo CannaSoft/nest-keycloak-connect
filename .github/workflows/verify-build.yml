@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 16.x ]
-        pnpm-version: [ 8 ]
+        node-version: [ 18.x ]
+        pnpm-version: [ 8.x ]
     steps:
       - uses: actions/checkout@v2
 
