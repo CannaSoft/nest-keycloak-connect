@@ -58,7 +58,7 @@ export class AuthGuard implements CanActivate {
       this.extractJwtFromCookie(request.cookies) ??
       this.extractJwt(request.headers) ??
       this.extractJwtSocketIOAuth(request.auth) ??
-      this.extractJwtFromQuery(request.query);
+      this.extractJWTFromData(request.data);
     const isJwtEmpty = jwt === null || jwt === undefined;
 
     // Empty jwt, but skipAuth = false, isUnprotected = true allow fallback
@@ -160,9 +160,9 @@ export class AuthGuard implements CanActivate {
     return false;
   }
 
-  private extractJwtFromQuery(query: { [key: string]: string }) {
-    if (query && query.token) {
-      return query.token;
+  private extractJWTFromData(data: { [key: string]: string }) {
+    if (data && data.jwt) {
+      return data.jwt;
     }
     return null;
   }

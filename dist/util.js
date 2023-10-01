@@ -59,6 +59,7 @@ const extractRequest = (context) => {
             wsRequest.headers = (_a = socket.handshake) === null || _a === void 0 ? void 0 : _a.headers;
             wsRequest.query = (_b = socket.handshake) === null || _b === void 0 ? void 0 : _b.query;
             wsRequest.auth = (_c = socket.handshake) === null || _c === void 0 ? void 0 : _c.auth;
+            wsRequest.data = wsContext.getData();
             request = wsRequest;
             response = {};
         }

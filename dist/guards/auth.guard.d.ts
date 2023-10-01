@@ -17,7 +17,7 @@ export declare class AuthGuard implements CanActivate {
     canActivate(context: ExecutionContext): Promise<boolean>;
     private throwUnauthorized;
     private validateToken;
-    private extractJwtFromQuery;
+    private extractJWTFromData;
     private extractJwtSocketIOAuth;
     private extractJwt;
     private extractJwtFromCookie;

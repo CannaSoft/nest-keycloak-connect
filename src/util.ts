@@ -61,6 +61,7 @@ export const extractRequest = (context: ExecutionContext): [any, any, string] =>
       wsRequest.headers = socket.handshake?.headers;
       wsRequest.query = socket.handshake?.query;
       wsRequest.auth = socket.handshake?.auth;
+      wsRequest.data = wsContext.getData();
 
       request = wsRequest;
       response = {};

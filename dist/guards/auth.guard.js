@@ -82,7 +82,7 @@ let AuthGuard = class AuthGuard {
             if (!request) {
                 return true;
             }
-            const jwt = (_c = (_b = (_a = this.extractJwtFromCookie(request.cookies)) !== null && _a !== void 0 ? _a : this.extractJwt(request.headers)) !== null && _b !== void 0 ? _b : this.extractJwtSocketIOAuth(request.auth)) !== null && _c !== void 0 ? _c : this.extractJwtFromQuery(request.query);
+            const jwt = (_c = (_b = (_a = this.extractJwtFromCookie(request.cookies)) !== null && _a !== void 0 ? _a : this.extractJwt(request.headers)) !== null && _b !== void 0 ? _b : this.extractJwtSocketIOAuth(request.auth)) !== null && _c !== void 0 ? _c : this.extractJWTFromData(request.data);
             const isJwtEmpty = jwt === null || jwt === undefined;
             // Empty jwt, but skipAuth = false, isUnprotected = true allow fallback
             if (isJwtEmpty && !skipAuth && isUnprotected) {
@@ -161,9 +161,9 @@ let AuthGuard = class AuthGuard {
             return false;
         });
     }
-    extractJwtFromQuery(query) {
-        if (query && query.token) {
-            return query.token;
+    extractJWTFromData(data) {
+        if (data && data.jwt) {
+            return data.jwt;
         }
         return null;
     }
