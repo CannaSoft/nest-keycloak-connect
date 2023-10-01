@@ -67,6 +67,7 @@ export const keycloakProvider: Provider = {
   inject: [KEYCLOAK_CONNECT_OPTIONS],
 };
 
+
 const parseConfig = (
   opts: KeycloakConnectOptions,
   config?: NestKeycloakConfig,

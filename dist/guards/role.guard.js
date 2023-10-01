@@ -57,7 +57,8 @@ const util_1 = require("../util");
  * @since 1.1.0
  */
 let RoleGuard = class RoleGuard {
-    constructor(singleTenant, keycloakOpts, logger, multiTenant, reflector) {
+    constructor(jwtTokenMap, singleTenant, keycloakOpts, logger, multiTenant, reflector) {
+        this.jwtTokenMap = jwtTokenMap;
         this.singleTenant = singleTenant;
         this.keycloakOpts = keycloakOpts;
         this.logger = logger;
@@ -97,7 +98,7 @@ let RoleGuard = class RoleGuard {
             this.logger.verbose(`Using matching mode: ${roleMatchingMode}`);
             this.logger.verbose(`Roles: ${JSON.stringify(combinedRoles)}`);
             // Extract request
-            const [request] = (0, util_1.extractRequest)(context);
+            const [request] = (0, util_1.extractRequest)(context, this.jwtTokenMap);
             const { accessTokenJWT } = request;
             // if is not an HTTP request ignore this guard
             if (!request) {
@@ -131,10 +132,11 @@ let RoleGuard = class RoleGuard {
 };
 RoleGuard = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)(constants_1.KEYCLOAK_INSTANCE)),
-    __param(1, (0, common_1.Inject)(constants_1.KEYCLOAK_CONNECT_OPTIONS)),
-    __param(2, (0, common_1.Inject)(constants_1.KEYCLOAK_LOGGER)),
-    __metadata("design:paramtypes", [Object, Object, common_1.Logger,
+    __param(0, (0, common_1.Inject)('JWTTokenMap')),
+    __param(1, (0, common_1.Inject)(constants_1.KEYCLOAK_INSTANCE)),
+    __param(2, (0, common_1.Inject)(constants_1.KEYCLOAK_CONNECT_OPTIONS)),
+    __param(3, (0, common_1.Inject)(constants_1.KEYCLOAK_LOGGER)),
+    __metadata("design:paramtypes", [Map, Object, Object, common_1.Logger,
         keycloak_multitenant_service_1.KeycloakMultiTenantService,
         core_1.Reflector])
 ], RoleGuard);

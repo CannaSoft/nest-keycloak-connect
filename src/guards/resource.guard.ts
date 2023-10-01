@@ -8,11 +8,12 @@ import {
 import { Reflector } from '@nestjs/core';
 import * as KeycloakConnect from 'keycloak-connect';
 import {
+  JWT_MAPPING,
   KEYCLOAK_CONNECT_OPTIONS,
   KEYCLOAK_INSTANCE,
   KEYCLOAK_LOGGER,
-  PolicyEnforcementMode,
-} from '../constants';
+  PolicyEnforcementMode
+} from "../constants";
 import { META_ENFORCER_OPTIONS } from '../decorators/enforcer-options.decorator';
 import { META_UNPROTECTED } from '../decorators/public.decorator';
 import { META_RESOURCE } from '../decorators/resource.decorator';
@@ -29,6 +30,8 @@ import { extractRequest, useKeycloak } from '../util';
 @Injectable()
 export class ResourceGuard implements CanActivate {
   constructor(
+    @Inject('JWTTokenMap')
+    private readonly jwtTokenMap: Map<string, string>,
     @Inject(KEYCLOAK_INSTANCE)
     private singleTenant: KeycloakConnect.Keycloak,
     @Inject(KEYCLOAK_CONNECT_OPTIONS)
@@ -96,7 +99,7 @@ export class ResourceGuard implements CanActivate {
     // Build permissions
     const permissions = scopes.map(scope => `${resource}:${scope}`);
     // Extract request/response
-    const [request, response] = extractRequest(context);
+    const [request, response] = extractRequest(context, this.jwtTokenMap);
 
     // if is not an HTTP request ignore this guard
     if (!request) {

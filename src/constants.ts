@@ -8,6 +8,8 @@ export const KEYCLOAK_CONNECT_OPTIONS = 'KEYCLOAK_CONNECT_OPTIONS';
  */
 export const KEYCLOAK_INSTANCE = 'KEYCLOAK_INSTANCE';
 
+export const JWT_MAPPING = 'JWT_MAPPING';
+
 /**
  * Key for injecting a keycloak multi tenant service.
  */

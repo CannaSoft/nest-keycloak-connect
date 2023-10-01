@@ -8,6 +8,6 @@ const util_1 = require("../util");
  * @since 1.5.0
  */
 exports.AuthenticatedUser = (0, common_1.createParamDecorator)((data, ctx) => {
-    const [req] = (0, util_1.extractRequest)(ctx);
+    const [req] = (0, util_1.extractRequest)(ctx, new Map());
     return req.user;
 });

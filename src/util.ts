@@ -27,7 +27,10 @@ export const useKeycloak = async (
   return singleTenant;
 };
 
-export const extractRequest = (context: ExecutionContext): [any, any, string] => {
+export const extractRequest = (
+  context: ExecutionContext,
+  jwtMapping: Map<string, string>
+): [any, any, string] => {
   let request: any, response: any;
 
   // Check if request is coming from graphql or http
@@ -61,7 +64,7 @@ export const extractRequest = (context: ExecutionContext): [any, any, string] =>
       wsRequest.headers = socket.handshake?.headers;
       wsRequest.query = socket.handshake?.query;
       wsRequest.auth = socket.handshake?.auth;
-      wsRequest.data = wsContext.getData();
+      wsRequest.accessTokenJWT = jwtMapping.get(socket.id);
 
       request = wsRequest;
       response = {};

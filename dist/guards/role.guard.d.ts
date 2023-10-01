@@ -8,11 +8,12 @@ import { KeycloakMultiTenantService } from '../services/keycloak-multitenant.ser
  * @since 1.1.0
  */
 export declare class RoleGuard implements CanActivate {
+    private readonly jwtTokenMap;
     private singleTenant;
     private keycloakOpts;
     private logger;
     private multiTenant;
     private readonly reflector;
-    constructor(singleTenant: KeycloakConnect.Keycloak, keycloakOpts: KeycloakConnectConfig, logger: Logger, multiTenant: KeycloakMultiTenantService, reflector: Reflector);
+    constructor(jwtTokenMap: Map<string, string>, singleTenant: KeycloakConnect.Keycloak, keycloakOpts: KeycloakConnectConfig, logger: Logger, multiTenant: KeycloakMultiTenantService, reflector: Reflector);
     canActivate(context: ExecutionContext): Promise<boolean>;
 }

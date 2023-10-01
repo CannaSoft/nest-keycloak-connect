@@ -6,6 +6,7 @@ export declare const KEYCLOAK_CONNECT_OPTIONS = "KEYCLOAK_CONNECT_OPTIONS";
  * Key for injecting a keycloak instance.
  */
 export declare const KEYCLOAK_INSTANCE = "KEYCLOAK_INSTANCE";
+export declare const JWT_MAPPING = "JWT_MAPPING";
 /**
  * Key for injecting a keycloak multi tenant service.
  */

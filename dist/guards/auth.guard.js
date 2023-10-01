@@ -57,7 +57,8 @@ const util_1 = require("../util");
  * verify the JWT token or Bearer header is missing.
  */
 let AuthGuard = class AuthGuard {
-    constructor(singleTenant, keycloakOpts, logger, multiTenant, reflector) {
+    constructor(jwtTokenMap, singleTenant, keycloakOpts, logger, multiTenant, reflector) {
+        this.jwtTokenMap = jwtTokenMap;
         this.singleTenant = singleTenant;
         this.keycloakOpts = keycloakOpts;
         this.logger = logger;
@@ -65,33 +66,33 @@ let AuthGuard = class AuthGuard {
         this.reflector = reflector;
     }
     canActivate(context) {
-        var _a, _b, _c;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const isUnprotected = this.reflector.getAllAndOverride(public_decorator_1.META_UNPROTECTED, [context.getClass(), context.getHandler()]);
             const skipAuth = this.reflector.getAllAndOverride(public_decorator_1.META_SKIP_AUTH, [
                 context.getClass(),
-                context.getHandler()
+                context.getHandler(),
             ]);
             // If unprotected is set skip Keycloak authentication
             if (isUnprotected && skipAuth) {
                 return true;
             }
             // Extract request/response
-            const [request, _, type] = (0, util_1.extractRequest)(context);
+            const [request, _, type] = (0, util_1.extractRequest)(context, this.jwtTokenMap);
             // if is not an HTTP request ignore this guard
             if (!request) {
                 return true;
             }
-            const jwt = (_c = (_b = (_a = this.extractJWTFromData(request.data)) !== null && _a !== void 0 ? _a : this.extractJwtFromCookie(request.cookies)) !== null && _b !== void 0 ? _b : this.extractJwt(request.headers)) !== null && _c !== void 0 ? _c : this.extractJwtSocketIOAuth(request.auth);
+            const jwt = (_b = (_a = this.extractJwt(request.headers)) !== null && _a !== void 0 ? _a : this.extractJwtFromCookie(request.cookies)) !== null && _b !== void 0 ? _b : this.extractJwtSocketIOAuth(request);
             const isJwtEmpty = jwt === null || jwt === undefined;
             // Empty jwt, but skipAuth = false, isUnprotected = true allow fallback
             if (isJwtEmpty && !skipAuth && isUnprotected) {
-                this.logger.verbose("Empty JWT, skipAuth disabled, and a publicly marked route, allowed for fallback");
+                this.logger.verbose('Empty JWT, skipAuth disabled, and a publicly marked route, allowed for fallback');
                 return true;
             }
             // Empty jwt given, immediate return
             if (isJwtEmpty) {
-                this.logger.verbose("Empty JWT, unauthorized");
+                this.logger.verbose('Empty JWT, unauthorized');
                 this.throwUnauthorized(type);
             }
             this.logger.verbose(`User JWT: ${jwt}`);
@@ -109,14 +110,14 @@ let AuthGuard = class AuthGuard {
         });
     }
     throwUnauthorized(type) {
-        if (type === "ws") {
+        if (type === 'ws') {
             let nws;
             // Check if websockets is installed
             try {
-                nws = require("@nestjs/websockets");
+                nws = require('@nestjs/websockets');
             }
             catch (er) {
-                throw new Error("@nestjs/websockets is not installed, cannot proceed");
+                throw new Error('@nestjs/websockets is not installed, cannot proceed');
             }
             throw new nws.WsException(`Unauthorized`);
         }
@@ -146,7 +147,7 @@ let AuthGuard = class AuthGuard {
                         result = yield gm.validateAccessToken(token);
                         return result === token;
                     case constants_1.TokenValidation.OFFLINE:
-                        result = yield gm.validateToken(token, "Bearer");
+                        result = yield gm.validateToken(token, 'Bearer');
                         return result === token;
                     case constants_1.TokenValidation.NONE:
                         return true;
@@ -167,20 +168,21 @@ let AuthGuard = class AuthGuard {
         }
         return null;
     }
-    extractJwtSocketIOAuth(auth) {
+    extractJwtSocketIOAuth(request) {
+        const { auth, accessTokenJWT } = request;
         if (auth && auth.token) {
             return auth.token;
         }
-        return null;
+        return accessTokenJWT !== null && accessTokenJWT !== void 0 ? accessTokenJWT : null;
     }
     extractJwt(headers) {
         if (headers && !headers.authorization) {
             this.logger.verbose(`No authorization header`);
             return null;
         }
-        const auth = headers.authorization.split(" ");
+        const auth = headers.authorization.split(' ');
         // We only allow bearer
-        if (auth[0].toLowerCase() !== "bearer") {
+        if (auth[0].toLowerCase() !== 'bearer') {
             this.logger.verbose(`No bearer header`);
             return null;
         }
@@ -193,10 +195,11 @@ let AuthGuard = class AuthGuard {
 };
 AuthGuard = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)(constants_1.KEYCLOAK_INSTANCE)),
-    __param(1, (0, common_1.Inject)(constants_1.KEYCLOAK_CONNECT_OPTIONS)),
-    __param(2, (0, common_1.Inject)(constants_1.KEYCLOAK_LOGGER)),
-    __metadata("design:paramtypes", [Object, Object, common_1.Logger,
+    __param(0, (0, common_1.Inject)('JWTTokenMap')),
+    __param(1, (0, common_1.Inject)(constants_1.KEYCLOAK_INSTANCE)),
+    __param(2, (0, common_1.Inject)(constants_1.KEYCLOAK_CONNECT_OPTIONS)),
+    __param(3, (0, common_1.Inject)(constants_1.KEYCLOAK_LOGGER)),
+    __metadata("design:paramtypes", [Map, Object, Object, common_1.Logger,
         keycloak_multitenant_service_1.KeycloakMultiTenantService,
         core_1.Reflector])
 ], AuthGuard);

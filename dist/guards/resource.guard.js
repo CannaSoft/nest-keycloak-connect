@@ -61,7 +61,8 @@ const util_1 = require("../util");
  * are handled by this guard.
  */
 let ResourceGuard = class ResourceGuard {
-    constructor(singleTenant, keycloakOpts, logger, multiTenant, reflector) {
+    constructor(jwtTokenMap, singleTenant, keycloakOpts, logger, multiTenant, reflector) {
+        this.jwtTokenMap = jwtTokenMap;
         this.singleTenant = singleTenant;
         this.keycloakOpts = keycloakOpts;
         this.logger = logger;
@@ -102,7 +103,7 @@ let ResourceGuard = class ResourceGuard {
             // Build permissions
             const permissions = scopes.map(scope => `${resource}:${scope}`);
             // Extract request/response
-            const [request, response] = (0, util_1.extractRequest)(context);
+            const [request, response] = (0, util_1.extractRequest)(context, this.jwtTokenMap);
             // if is not an HTTP request ignore this guard
             if (!request) {
                 return true;
@@ -128,10 +129,11 @@ let ResourceGuard = class ResourceGuard {
 };
 ResourceGuard = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)(constants_1.KEYCLOAK_INSTANCE)),
-    __param(1, (0, common_1.Inject)(constants_1.KEYCLOAK_CONNECT_OPTIONS)),
-    __param(2, (0, common_1.Inject)(constants_1.KEYCLOAK_LOGGER)),
-    __metadata("design:paramtypes", [Object, Object, common_1.Logger,
+    __param(0, (0, common_1.Inject)('JWTTokenMap')),
+    __param(1, (0, common_1.Inject)(constants_1.KEYCLOAK_INSTANCE)),
+    __param(2, (0, common_1.Inject)(constants_1.KEYCLOAK_CONNECT_OPTIONS)),
+    __param(3, (0, common_1.Inject)(constants_1.KEYCLOAK_LOGGER)),
+    __metadata("design:paramtypes", [Map, Object, Object, common_1.Logger,
         keycloak_multitenant_service_1.KeycloakMultiTenantService,
         core_1.Reflector])
 ], ResourceGuard);

@@ -27,6 +27,8 @@ import { extractRequest, useKeycloak } from '../util';
 @Injectable()
 export class RoleGuard implements CanActivate {
   constructor(
+    @Inject('JWTTokenMap')
+    private readonly jwtTokenMap: Map<string, string>,
     @Inject(KEYCLOAK_INSTANCE)
     private singleTenant: KeycloakConnect.Keycloak,
     @Inject(KEYCLOAK_CONNECT_OPTIONS)
@@ -80,7 +82,7 @@ export class RoleGuard implements CanActivate {
     this.logger.verbose(`Roles: ${JSON.stringify(combinedRoles)}`);
 
     // Extract request
-    const [request] = extractRequest(context);
+    const [request] = extractRequest(context, this.jwtTokenMap);
     const { accessTokenJWT } = request;
 
     // if is not an HTTP request ignore this guard

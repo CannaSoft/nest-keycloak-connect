@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RoleMerge = exports.TokenValidation = exports.PolicyEnforcementMode = exports.RoleMatchingMode = exports.KEYCLOAK_COOKIE_DEFAULT = exports.KEYCLOAK_LOGGER = exports.KEYCLOAK_MULTITENANT_SERVICE = exports.KEYCLOAK_INSTANCE = exports.KEYCLOAK_CONNECT_OPTIONS = void 0;
+exports.RoleMerge = exports.TokenValidation = exports.PolicyEnforcementMode = exports.RoleMatchingMode = exports.KEYCLOAK_COOKIE_DEFAULT = exports.KEYCLOAK_LOGGER = exports.KEYCLOAK_MULTITENANT_SERVICE = exports.JWT_MAPPING = exports.KEYCLOAK_INSTANCE = exports.KEYCLOAK_CONNECT_OPTIONS = void 0;
 /**
  * Used internally, provides keycloak options for the Nest guards.
  */
@@ -9,6 +9,7 @@ exports.KEYCLOAK_CONNECT_OPTIONS = 'KEYCLOAK_CONNECT_OPTIONS';
  * Key for injecting a keycloak instance.
  */
 exports.KEYCLOAK_INSTANCE = 'KEYCLOAK_INSTANCE';
+exports.JWT_MAPPING = 'JWT_MAPPING';
 /**
  * Key for injecting a keycloak multi tenant service.
  */
