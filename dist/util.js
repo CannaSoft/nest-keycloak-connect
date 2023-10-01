@@ -27,7 +27,7 @@ const useKeycloak = (request, jwt, singleTenant, multiTenant, opts) => __awaiter
 });
 exports.useKeycloak = useKeycloak;
 const extractRequest = (context) => {
-    var _a, _b;
+    var _a, _b, _c;
     let request, response;
     // Check if request is coming from graphql or http
     if (context.getType() === "http") {
@@ -58,6 +58,7 @@ const extractRequest = (context) => {
             const wsRequest = socket.request;
             wsRequest.headers = (_a = socket.handshake) === null || _a === void 0 ? void 0 : _a.headers;
             wsRequest.query = (_b = socket.handshake) === null || _b === void 0 ? void 0 : _b.query;
+            wsRequest.auth = (_c = socket.handshake) === null || _c === void 0 ? void 0 : _c.auth;
             request = wsRequest;
             response = {};
         }

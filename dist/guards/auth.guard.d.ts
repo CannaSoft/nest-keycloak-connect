@@ -18,6 +18,7 @@ export declare class AuthGuard implements CanActivate {
     private throwUnauthorized;
     private validateToken;
     private extractJwtFromQuery;
+    private extractJwtSocketIOAuth;
     private extractJwt;
     private extractJwtFromCookie;
 }

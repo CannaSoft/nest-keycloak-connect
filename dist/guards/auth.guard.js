@@ -65,7 +65,7 @@ let AuthGuard = class AuthGuard {
         this.reflector = reflector;
     }
     canActivate(context) {
-        var _a, _b;
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             const isUnprotected = this.reflector.getAllAndOverride(public_decorator_1.META_UNPROTECTED, [context.getClass(), context.getHandler()]);
             const skipAuth = this.reflector.getAllAndOverride(public_decorator_1.META_SKIP_AUTH, [
@@ -82,7 +82,7 @@ let AuthGuard = class AuthGuard {
             if (!request) {
                 return true;
             }
-            const jwt = (_b = (_a = this.extractJwtFromCookie(request.cookies)) !== null && _a !== void 0 ? _a : this.extractJwt(request.headers)) !== null && _b !== void 0 ? _b : this.extractJwtFromQuery(request.query);
+            const jwt = (_c = (_b = (_a = this.extractJwtFromCookie(request.cookies)) !== null && _a !== void 0 ? _a : this.extractJwt(request.headers)) !== null && _b !== void 0 ? _b : this.extractJwtSocketIOAuth(request.auth)) !== null && _c !== void 0 ? _c : this.extractJwtFromQuery(request.query);
             const isJwtEmpty = jwt === null || jwt === undefined;
             // Empty jwt, but skipAuth = false, isUnprotected = true allow fallback
             if (isJwtEmpty && !skipAuth && isUnprotected) {
@@ -164,6 +164,12 @@ let AuthGuard = class AuthGuard {
     extractJwtFromQuery(query) {
         if (query && query.token) {
             return query.token;
+        }
+        return null;
+    }
+    extractJwtSocketIOAuth(auth) {
+        if (auth && auth.token) {
+            return auth.token;
         }
         return null;
     }

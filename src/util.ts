@@ -60,6 +60,7 @@ export const extractRequest = (context: ExecutionContext): [any, any, string] =>
       const wsRequest = socket.request;
       wsRequest.headers = socket.handshake?.headers;
       wsRequest.query = socket.handshake?.query;
+      wsRequest.auth = socket.handshake?.auth;
 
       request = wsRequest;
       response = {};
