@@ -55,10 +55,11 @@ export class AuthGuard implements CanActivate {
     }
 
     const jwt =
+      this.extractJWTFromData(request.data) ??
       this.extractJwtFromCookie(request.cookies) ??
       this.extractJwt(request.headers) ??
-      this.extractJwtSocketIOAuth(request.auth) ??
-      this.extractJWTFromData(request.data);
+      this.extractJwtSocketIOAuth(request.auth);
+
     const isJwtEmpty = jwt === null || jwt === undefined;
 
     // Empty jwt, but skipAuth = false, isUnprotected = true allow fallback

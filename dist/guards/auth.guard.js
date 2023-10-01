@@ -82,7 +82,7 @@ let AuthGuard = class AuthGuard {
             if (!request) {
                 return true;
             }
-            const jwt = (_c = (_b = (_a = this.extractJwtFromCookie(request.cookies)) !== null && _a !== void 0 ? _a : this.extractJwt(request.headers)) !== null && _b !== void 0 ? _b : this.extractJwtSocketIOAuth(request.auth)) !== null && _c !== void 0 ? _c : this.extractJWTFromData(request.data);
+            const jwt = (_c = (_b = (_a = this.extractJWTFromData(request.data)) !== null && _a !== void 0 ? _a : this.extractJwtFromCookie(request.cookies)) !== null && _b !== void 0 ? _b : this.extractJwt(request.headers)) !== null && _c !== void 0 ? _c : this.extractJwtSocketIOAuth(request.auth);
             const isJwtEmpty = jwt === null || jwt === undefined;
             // Empty jwt, but skipAuth = false, isUnprotected = true allow fallback
             if (isJwtEmpty && !skipAuth && isUnprotected) {
