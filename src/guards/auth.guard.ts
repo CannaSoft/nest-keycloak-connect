@@ -1,27 +1,17 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Inject,
-  Injectable,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import * as KeycloakConnect from 'keycloak-connect';
+import { CanActivate, ExecutionContext, Inject, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import * as KeycloakConnect from "keycloak-connect";
 import {
   KEYCLOAK_CONNECT_OPTIONS,
   KEYCLOAK_COOKIE_DEFAULT,
   KEYCLOAK_INSTANCE,
   KEYCLOAK_LOGGER,
-  TokenValidation,
-} from '../constants';
-import {
-  META_SKIP_AUTH,
-  META_UNPROTECTED,
-} from '../decorators/public.decorator';
-import { KeycloakConnectConfig } from '../interface/keycloak-connect-options.interface';
-import { KeycloakMultiTenantService } from '../services/keycloak-multitenant.service';
-import { extractRequest, parseToken, useKeycloak } from '../util';
+  TokenValidation
+} from "../constants";
+import { META_SKIP_AUTH, META_UNPROTECTED } from "../decorators/public.decorator";
+import { KeycloakConnectConfig } from "../interface/keycloak-connect-options.interface";
+import { KeycloakMultiTenantService } from "../services/keycloak-multitenant.service";
+import { extractRequest, parseToken, useKeycloak } from "../util";
 
 /**
  * An authentication guard. Will return a 401 unauthorized when it is unable to
@@ -37,17 +27,18 @@ export class AuthGuard implements CanActivate {
     @Inject(KEYCLOAK_LOGGER)
     private logger: Logger,
     private multiTenant: KeycloakMultiTenantService,
-    private readonly reflector: Reflector,
-  ) {}
+    private readonly reflector: Reflector
+  ) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isUnprotected = this.reflector.getAllAndOverride<boolean>(
       META_UNPROTECTED,
-      [context.getClass(), context.getHandler()],
+      [context.getClass(), context.getHandler()]
     );
     const skipAuth = this.reflector.getAllAndOverride<boolean>(META_SKIP_AUTH, [
       context.getClass(),
-      context.getHandler(),
+      context.getHandler()
     ]);
 
     // If unprotected is set skip Keycloak authentication
@@ -65,20 +56,21 @@ export class AuthGuard implements CanActivate {
 
     const jwt =
       this.extractJwtFromCookie(request.cookies) ??
-      this.extractJwt(request.headers);
+      this.extractJwt(request.headers) ??
+      this.extractJwtFromQuery(request.query);
     const isJwtEmpty = jwt === null || jwt === undefined;
 
     // Empty jwt, but skipAuth = false, isUnprotected = true allow fallback
     if (isJwtEmpty && !skipAuth && isUnprotected) {
       this.logger.verbose(
-        'Empty JWT, skipAuth disabled, and a publicly marked route, allowed for fallback',
+        "Empty JWT, skipAuth disabled, and a publicly marked route, allowed for fallback"
       );
       return true;
     }
 
     // Empty jwt given, immediate return
     if (isJwtEmpty) {
-      this.logger.verbose('Empty JWT, unauthorized');
+      this.logger.verbose("Empty JWT, unauthorized");
       this.throwUnauthorized(type);
     }
 
@@ -89,7 +81,7 @@ export class AuthGuard implements CanActivate {
       jwt,
       this.singleTenant,
       this.multiTenant,
-      this.keycloakOpts,
+      this.keycloakOpts
     );
     const isValidToken = await this.validateToken(keycloak, jwt);
 
@@ -100,7 +92,7 @@ export class AuthGuard implements CanActivate {
       request.accessTokenJWT = jwt;
 
       this.logger.verbose(
-        `Authenticated User: ${JSON.stringify(request.user)}`,
+        `Authenticated User: ${JSON.stringify(request.user)}`
       );
       return true;
     }
@@ -109,13 +101,13 @@ export class AuthGuard implements CanActivate {
   }
 
   private throwUnauthorized(type: string) {
-    if (type === 'ws') {
+    if (type === "ws") {
       let nws: any;
       // Check if websockets is installed
       try {
-        nws = require('@nestjs/websockets');
+        nws = require("@nestjs/websockets");
       } catch (er) {
-        throw new Error('@nestjs/websockets is not installed, cannot proceed');
+        throw new Error("@nestjs/websockets is not installed, cannot proceed");
       }
       throw new nws.WsException(`Unauthorized`);
     } else {
@@ -141,7 +133,7 @@ export class AuthGuard implements CanActivate {
     const token = grant.access_token;
 
     this.logger.verbose(
-      `Using token validation method: ${tokenValidation.toUpperCase()}`,
+      `Using token validation method: ${tokenValidation.toUpperCase()}`
     );
 
     try {
@@ -152,7 +144,7 @@ export class AuthGuard implements CanActivate {
           result = await gm.validateAccessToken(token);
           return result === token;
         case TokenValidation.OFFLINE:
-          result = await gm.validateToken(token, 'Bearer');
+          result = await gm.validateToken(token, "Bearer");
           return result === token;
         case TokenValidation.NONE:
           return true;
@@ -167,16 +159,23 @@ export class AuthGuard implements CanActivate {
     return false;
   }
 
+  private extractJwtFromQuery(query: { [key: string]: string }) {
+    if (query && query.token) {
+      return query.token;
+    }
+    return null;
+  }
+
   private extractJwt(headers: { [key: string]: string }) {
     if (headers && !headers.authorization) {
       this.logger.verbose(`No authorization header`);
       return null;
     }
 
-    const auth = headers.authorization.split(' ');
+    const auth = headers.authorization.split(" ");
 
     // We only allow bearer
-    if (auth[0].toLowerCase() !== 'bearer') {
+    if (auth[0].toLowerCase() !== "bearer") {
       this.logger.verbose(`No bearer header`);
       return null;
     }

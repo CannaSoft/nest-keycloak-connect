@@ -65,12 +65,12 @@ let AuthGuard = class AuthGuard {
         this.reflector = reflector;
     }
     canActivate(context) {
-        var _a;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const isUnprotected = this.reflector.getAllAndOverride(public_decorator_1.META_UNPROTECTED, [context.getClass(), context.getHandler()]);
             const skipAuth = this.reflector.getAllAndOverride(public_decorator_1.META_SKIP_AUTH, [
                 context.getClass(),
-                context.getHandler(),
+                context.getHandler()
             ]);
             // If unprotected is set skip Keycloak authentication
             if (isUnprotected && skipAuth) {
@@ -82,16 +82,16 @@ let AuthGuard = class AuthGuard {
             if (!request) {
                 return true;
             }
-            const jwt = (_a = this.extractJwtFromCookie(request.cookies)) !== null && _a !== void 0 ? _a : this.extractJwt(request.headers);
+            const jwt = (_b = (_a = this.extractJwtFromCookie(request.cookies)) !== null && _a !== void 0 ? _a : this.extractJwt(request.headers)) !== null && _b !== void 0 ? _b : this.extractJwtFromQuery(request.query);
             const isJwtEmpty = jwt === null || jwt === undefined;
             // Empty jwt, but skipAuth = false, isUnprotected = true allow fallback
             if (isJwtEmpty && !skipAuth && isUnprotected) {
-                this.logger.verbose('Empty JWT, skipAuth disabled, and a publicly marked route, allowed for fallback');
+                this.logger.verbose("Empty JWT, skipAuth disabled, and a publicly marked route, allowed for fallback");
                 return true;
             }
             // Empty jwt given, immediate return
             if (isJwtEmpty) {
-                this.logger.verbose('Empty JWT, unauthorized');
+                this.logger.verbose("Empty JWT, unauthorized");
                 this.throwUnauthorized(type);
             }
             this.logger.verbose(`User JWT: ${jwt}`);
@@ -109,14 +109,14 @@ let AuthGuard = class AuthGuard {
         });
     }
     throwUnauthorized(type) {
-        if (type === 'ws') {
+        if (type === "ws") {
             let nws;
             // Check if websockets is installed
             try {
-                nws = require('@nestjs/websockets');
+                nws = require("@nestjs/websockets");
             }
             catch (er) {
-                throw new Error('@nestjs/websockets is not installed, cannot proceed');
+                throw new Error("@nestjs/websockets is not installed, cannot proceed");
             }
             throw new nws.WsException(`Unauthorized`);
         }
@@ -146,7 +146,7 @@ let AuthGuard = class AuthGuard {
                         result = yield gm.validateAccessToken(token);
                         return result === token;
                     case constants_1.TokenValidation.OFFLINE:
-                        result = yield gm.validateToken(token, 'Bearer');
+                        result = yield gm.validateToken(token, "Bearer");
                         return result === token;
                     case constants_1.TokenValidation.NONE:
                         return true;
@@ -161,14 +161,20 @@ let AuthGuard = class AuthGuard {
             return false;
         });
     }
+    extractJwtFromQuery(query) {
+        if (query && query.token) {
+            return query.token;
+        }
+        return null;
+    }
     extractJwt(headers) {
         if (headers && !headers.authorization) {
             this.logger.verbose(`No authorization header`);
             return null;
         }
-        const auth = headers.authorization.split(' ');
+        const auth = headers.authorization.split(" ");
         // We only allow bearer
-        if (auth[0].toLowerCase() !== 'bearer') {
+        if (auth[0].toLowerCase() !== "bearer") {
             this.logger.verbose(`No bearer header`);
             return null;
         }

@@ -1,8 +1,8 @@
-import { CanActivate, ExecutionContext, Logger } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import * as KeycloakConnect from 'keycloak-connect';
-import { KeycloakConnectConfig } from '../interface/keycloak-connect-options.interface';
-import { KeycloakMultiTenantService } from '../services/keycloak-multitenant.service';
+import { CanActivate, ExecutionContext, Logger } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import * as KeycloakConnect from "keycloak-connect";
+import { KeycloakConnectConfig } from "../interface/keycloak-connect-options.interface";
+import { KeycloakMultiTenantService } from "../services/keycloak-multitenant.service";
 /**
  * An authentication guard. Will return a 401 unauthorized when it is unable to
  * verify the JWT token or Bearer header is missing.
@@ -17,6 +17,7 @@ export declare class AuthGuard implements CanActivate {
     canActivate(context: ExecutionContext): Promise<boolean>;
     private throwUnauthorized;
     private validateToken;
+    private extractJwtFromQuery;
     private extractJwt;
     private extractJwtFromCookie;
 }
